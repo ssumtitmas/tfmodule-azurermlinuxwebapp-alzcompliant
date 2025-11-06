@@ -12,8 +12,8 @@ variable "environment" {
   description = "Environment name for ALZ naming convention"
   type        = string
   validation {
-    condition     = contains(["dev", "test", "staging", "prod"], var.environment)
-    error_message = "Environment must be one of: dev, test, staging, prod."
+    condition     = contains(["dev", "qa", "staging", "prod"], var.environment)
+    error_message = "Environment must be one of: dev, qa, staging, prod."
   }
 }
 

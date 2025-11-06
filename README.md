@@ -65,19 +65,24 @@ A production-ready Terraform module that deploys an Azure Linux Web App with sec
 module "web_app" {
   source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant//modules/linux-webapp?ref=v1.0.0"
 
-  # Core configuration
-  workload_name       = "myapp"
-  environment         = "prod"
-  location            = "East US 2"
-  resource_group_name = "rg-myapp-prod-eastus2-001"
-
-  # ALZ compliance requirement
+  # ========================================
+  # REQUIRED VARIABLES
+  # ========================================
+  workload_name       = "myapp"              # REQUIRED: Workload name for ALZ naming
+  environment         = "prod"               # REQUIRED: Environment (dev, test, staging, prod)
+  location            = "East US 2"          # REQUIRED: Azure region
+  resource_group_name = "rg-myapp-prod-eastus2-001"  # REQUIRED: Resource group name
+  
+  # REQUIRED: Log Analytics workspace for ALZ compliance
   log_analytics_workspace_id = "/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.OperationalInsights/workspaces/{workspace-name}"
 
-  # Runtime configuration
+  # ========================================
+  # OPTIONAL VARIABLES (with defaults)
+  # ========================================
+  # Runtime configuration (defaults to NODE|18-lts)
   linux_fx_version = "NODE|18-lts"
 
-  # ALZ compliance tags
+  # ALZ compliance tags (optional - defaults provided)
   tags = {
     Environment = "Production"
     Owner      = "Application Team"
@@ -97,17 +102,18 @@ The simplest deployment for development or testing environments:
 module "basic_web_app" {
   source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant//modules/linux-webapp?ref=v1.0.0"
 
+  # REQUIRED: Core configuration
   workload_name                = "webapp"
-  environment                  = "dev"
+  environment                  = "dev"  # Must be: dev, test, staging, or prod
   location                     = "East US 2"
   resource_group_name          = "rg-webapp-dev-eastus2-001"
   log_analytics_workspace_id   = var.log_analytics_workspace_id
 
-  # Basic runtime configuration
-  linux_fx_version = "PYTHON|3.11"
-  app_service_plan_sku = "B1"
+  # OPTIONAL: Runtime configuration (overriding defaults)
+  linux_fx_version = "PYTHON|3.11"      # Default: NODE|18-lts
+  app_service_plan_sku = "B1"           # Default: B1
 
-  # Development tags
+  # OPTIONAL: Development tags
   tags = {
     Environment = "Development"
     Owner      = "Dev Team"
@@ -125,19 +131,20 @@ Production deployment with comprehensive monitoring and custom app settings:
 module "production_web_app" {
   source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant//modules/linux-webapp?ref=v1.0.0"
 
+  # REQUIRED: Core configuration
   workload_name                = "webapp"
   environment                  = "prod"
   location                     = "East US 2"
   resource_group_name          = "rg-webapp-prod-eastus2-001"
   log_analytics_workspace_id   = var.log_analytics_workspace_id
 
-  # Production App Service Plan
+  # OPTIONAL: Production App Service Plan (overriding default B1)
   app_service_plan_sku = "P2v3"
 
-  # Runtime configuration
+  # OPTIONAL: Runtime configuration
   linux_fx_version = "NODE|18-lts"
 
-  # Enhanced site configuration
+  # OPTIONAL: Enhanced site configuration
   site_config = {
     always_on               = true
     health_check_path      = "/health"
@@ -147,7 +154,7 @@ module "production_web_app" {
     worker_count           = 2
   }
 
-  # Application settings
+  # OPTIONAL: Application settings
   app_settings = {
     "WEBSITE_NODE_DEFAULT_VERSION" = "18.17.0"
     "NODE_ENV"                     = "production"
@@ -199,17 +206,18 @@ Secure deployment with network access controls:
 module "secure_web_app" {
   source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant//modules/linux-webapp?ref=v1.0.0"
 
+  # REQUIRED: Core configuration
   workload_name                = "webapp"
   environment                  = "prod"
   location                     = "East US 2"
   resource_group_name          = "rg-webapp-prod-eastus2-001"
   log_analytics_workspace_id   = var.log_analytics_workspace_id
 
-  # Premium tier for private access
+  # OPTIONAL: Premium tier for advanced features
   app_service_plan_sku = "P2v3"
   linux_fx_version = "DOTNETCORE|8.0"
 
-  # Network access restrictions
+  # OPTIONAL: Network access restrictions (default: no restrictions)
   access_restrictions = [
     {
       name                      = "AllowCorporateVNet"
@@ -234,12 +242,12 @@ module "secure_web_app" {
     }
   ]
 
-  # User-assigned managed identity
+  # OPTIONAL: User-assigned managed identity (default: system-assigned only)
   user_assigned_identity_ids = [
     var.user_assigned_identity_id
   ]
 
-  # Security-focused tags
+  # OPTIONAL: Security-focused tags
   tags = {
     Environment        = "Production"
     Owner             = "Security Team"
@@ -404,12 +412,36 @@ output "web_app_identity" {
 | `user_assigned_identities` | User-assigned managed identity details |
 | `deployment_slots` | Deployment slot details |
 
-## 📁 Examples
+## � Required vs Optional Variables
+
+### Required Variables (Must Provide)
+These variables **must** be specified - Terraform will fail without them:
+- `workload_name` - Workload name for ALZ naming (2-10 chars, lowercase alphanumeric)
+- `environment` - Environment name (must be: dev, test, staging, or prod)
+- `location` - Azure region for deployment
+- `resource_group_name` - Name of the resource group
+- `log_analytics_workspace_id` - Log Analytics workspace resource ID for ALZ compliance
+
+### Optional Variables (Have Defaults)
+These variables are **optional** - they have sensible defaults:
+- `app_service_plan_sku` - Default: `"B1"` (Basic tier)
+- `linux_fx_version` - Default: `"NODE|18-lts"`
+- `public_network_access_enabled` - Default: `true` (public access enabled)
+- `private_endpoint` - Default: `{ enabled = false }` (no private endpoint)
+- `access_restrictions` - Default: `[]` (no IP restrictions)
+- `app_settings` - Default: `{}` (no custom app settings)
+- `user_assigned_identity_ids` - Default: `[]` (system-assigned identity only)
+- `tags` - Default: `{}` (no custom tags)
+
+**💡 Tip**: Only override optional variables when you need to change the default behavior!
+
+## �📁 Examples
 
 This repository includes four comprehensive examples:
 
 - **[Basic](./examples/basic/)**: Minimal ALZ-compliant deployment
 - **[Diagnostics](./examples/diagnostics/)**: Enhanced monitoring and logging
+- **[Internal](./examples/internal/)**: Private endpoint deployment with public access disabled
 - **[Internal](./examples/internal/)**: Private endpoint deployment with public access disabled
 - **[Private ASE](./examples/private-ase/)**: Private access with network restrictions
 
