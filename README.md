@@ -27,6 +27,7 @@ A production-ready Terraform module that deploys an Azure Linux Web App with sec
 ### Core Capabilities
 - **ALZ Policy Compliant**: Automatically configured to meet Azure Landing Zone security requirements
 - **Secure by Default**: HTTPS-only, TLS 1.2+, managed identity enabled
+- **Private Endpoint Support**: Deploy internal-only apps with Azure Private Link
 - **Zero-Downtime Deployments**: Built-in deployment slot support for production workloads
 - **Comprehensive Monitoring**: Integrated diagnostic settings and Log Analytics workspace support
 - **Network Security**: Configurable IP restrictions and virtual network integration
@@ -38,6 +39,8 @@ A production-ready Terraform module that deploys an Azure Linux Web App with sec
 - ✅ Managed identity by default
 - ✅ Diagnostic logging to Log Analytics
 - ✅ Network access restrictions
+- ✅ Private endpoint for internal deployments
+- ✅ Public network access control
 - ✅ ALZ naming conventions
 - ✅ Required ALZ compliance tags
 
@@ -403,10 +406,11 @@ output "web_app_identity" {
 
 ## 📁 Examples
 
-This repository includes three comprehensive examples:
+This repository includes four comprehensive examples:
 
 - **[Basic](./examples/basic/)**: Minimal ALZ-compliant deployment
 - **[Diagnostics](./examples/diagnostics/)**: Enhanced monitoring and logging
+- **[Internal](./examples/internal/)**: Private endpoint deployment with public access disabled
 - **[Private ASE](./examples/private-ase/)**: Private access with network restrictions
 
 Each example includes:

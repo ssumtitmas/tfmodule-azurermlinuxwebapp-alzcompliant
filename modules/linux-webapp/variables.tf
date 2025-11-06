@@ -121,6 +121,27 @@ variable "user_assigned_identity_ids" {
   }
 }
 
+# Network configuration
+variable "public_network_access_enabled" {
+  description = "Enable public network access to the web app. Set to false for internal/private deployments."
+  type        = bool
+  default     = true
+}
+
+# Private endpoint configuration
+variable "private_endpoint" {
+  description = "Private endpoint configuration for internal deployments"
+  type = object({
+    enabled                        = bool
+    subnet_id                      = optional(string)
+    private_dns_zone_ids           = optional(list(string), [])
+    private_service_connection_name = optional(string)
+  })
+  default = {
+    enabled = false
+  }
+}
+
 # Access restrictions
 variable "access_restrictions" {
   description = "IP access restrictions for the web app"

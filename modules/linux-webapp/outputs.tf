@@ -38,6 +38,16 @@ output "system_assigned_identity" {
   }
 }
 
+# Private endpoint outputs
+output "private_endpoint" {
+  description = "Private endpoint details"
+  value = var.private_endpoint.enabled ? {
+    id                   = azurerm_private_endpoint.web_app[0].id
+    name                 = azurerm_private_endpoint.web_app[0].name
+    private_ip_addresses = azurerm_private_endpoint.web_app[0].private_service_connection[0].private_ip_address
+  } : null
+}
+
 output "user_assigned_identities" {
   description = "User-assigned managed identity details"
   value = length(var.user_assigned_identity_ids) > 0 ? {

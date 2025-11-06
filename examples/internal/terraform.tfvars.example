@@ -1,0 +1,87 @@
+# Example terraform.tfvars file for internal/private endpoint deployment
+# Copy this file to terraform.tfvars and update with your values
+
+workload_name = "webapp"
+environment   = "prod"
+location      = "East US"
+resource_group_name = "rg-webapp-prod-eastus-001"
+
+# Replace with your Log Analytics workspace resource ID
+log_analytics_workspace_id = "/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.OperationalInsights/workspaces/{workspace-name}"
+
+# Optional: Use existing App Service Plan
+# app_service_plan_id = "/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Web/serverfarms/{plan-name}"
+
+# Premium App Service Plan required for private endpoints
+app_service_plan_sku = "P1v3"
+
+# Runtime configuration
+linux_fx_version = "NODE|18-lts"
+
+# Private Endpoint Configuration (REQUIRED for internal deployment)
+# Replace with your actual subnet and DNS zone resource IDs
+private_endpoint = {
+  enabled  = true
+  subnet_id = "/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/virtualNetworks/{vnet-name}/subnets/{subnet-name}"
+  
+  # Optional: Private DNS Zone for automatic DNS registration
+  # Recommended for seamless internal name resolution
+  private_dns_zone_ids = [
+    "/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.azurewebsites.net"
+  ]
+  
+  # Optional: Custom private service connection name
+  # private_service_connection_name = "webapp-prod-psc"
+}
+
+# Enhanced site configuration for internal deployment
+site_config = {
+  always_on              = true
+  use_32_bit_worker      = false
+  websockets_enabled     = false
+  health_check_path      = "/health"
+  client_affinity_enabled = false
+}
+
+# Internal application settings
+app_settings = {
+  "WEBSITE_NODE_DEFAULT_VERSION"     = "18.17.0"
+  "NODE_ENV"                         = "production"
+  "WEBSITE_HTTPLOGGING_RETENTION_DAYS" = "30"
+  "WEBSITE_HEALTHCHECK_MAXPINGFAILURES" = "3"
+  "SCM_DO_BUILD_DURING_DEPLOYMENT"   = "false"
+  "ENABLE_ORYX_BUILD"               = "false"
+  "WEBSITE_ENABLE_SYNC_UPDATE_SITE" = "true"
+  "WEBSITE_RUN_FROM_PACKAGE"        = "1"
+  # Add Application Insights for internal monitoring (optional)
+  # "APPINSIGHTS_INSTRUMENTATIONKEY"  = "{your-app-insights-key}"
+  # "APPLICATIONINSIGHTS_CONNECTION_STRING" = "{your-connection-string}"
+}
+
+# User-assigned managed identities (optional)
+# Replace with actual managed identity resource IDs for secure access to internal resources
+# user_assigned_identity_ids = [
+#   "/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identity-name}"
+# ]
+
+# Full diagnostic categories for internal monitoring
+diagnostic_log_categories = [
+  "AppServiceHTTPLogs",
+  "AppServiceConsoleLogs",
+  "AppServiceAppLogs",
+  "AppServiceAuditLogs",
+  "AppServiceIPSecAuditLogs",
+  "AppServicePlatformLogs"
+]
+
+# Internal deployment tags
+tags = {
+  Environment        = "Production"
+  Owner             = "Platform Team"
+  CostCenter        = "IT-001"
+  Compliance        = "ALZ"
+  DataClassification = "Internal"
+  NetworkType       = "Private"
+  BackupRequired    = "true"
+  SecurityLevel     = "High"
+}

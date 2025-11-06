@@ -36,14 +36,6 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Agent folders and AI-generated files
-.github/copilot-*
-.github/codeql-*
-.github/claude-*
-.github/gemini-*
-.cursor/
-.windsurf/
-
 # IDE and editor files
 .vscode/
 .idea/
