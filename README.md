@@ -481,10 +481,6 @@ This module automatically ensures compliance with Azure Landing Zone policies:
 - Log Analytics Workspace (existing)
 - Virtual Network/Subnet (optional, for network restrictions)
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🆘 Support
 
 For issues and questions:
@@ -494,4 +490,3 @@ For issues and questions:
 
 ---
 
-Made with ❤️ for Azure Landing Zone compliance
