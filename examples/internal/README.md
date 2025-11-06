@@ -152,7 +152,7 @@ Requires VPN or ExpressRoute connection to the Azure VNet.
 
 - [Basic](../basic/) - Simple public deployment
 - [Diagnostics](../diagnostics/) - Enhanced monitoring configuration
-- [Private ASE](../private-ase/) - Network restrictions with public access
+- [Private ISE](../private-ise/) - Network restrictions with public access
 
 ## Resources
 

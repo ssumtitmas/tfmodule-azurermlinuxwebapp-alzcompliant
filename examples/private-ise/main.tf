@@ -1,4 +1,4 @@
-# Private ASE Deployment Example
+# Private ISE Deployment Example
 # This example demonstrates deploying a Linux Web App with private access restrictions
 # Suitable for secure environments requiring network isolation
 

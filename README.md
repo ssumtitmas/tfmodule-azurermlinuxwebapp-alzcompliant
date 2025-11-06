@@ -441,8 +441,7 @@ This repository includes four comprehensive examples:
 - **[Basic](./examples/basic/)**: Minimal ALZ-compliant deployment
 - **[Diagnostics](./examples/diagnostics/)**: Enhanced monitoring and logging
 - **[Internal](./examples/internal/)**: Private endpoint deployment with public access disabled
-- **[Internal](./examples/internal/)**: Private endpoint deployment with public access disabled
-- **[Private ASE](./examples/private-ase/)**: Private access with network restrictions
+- **[Private ISE](./examples/private-ise/)**: Private access with network restrictions
 
 Each example includes:
 - Complete Terraform configuration
