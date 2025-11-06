@@ -1,4 +1,4 @@
-# Example terraform.tfvars file for internal/private endpoint deployment
+# Example terraform.tfvars file for internal-facing deployment with private endpoint
 # Copy this file to terraform.tfvars and update with your values
 
 workload_name = "webapp"

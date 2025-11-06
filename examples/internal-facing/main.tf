@@ -13,7 +13,7 @@ provider "azurerm" {
   features {}
 }
 
-# Internal/Private Web App deployment with Private Endpoint
+# Internal-Facing Web App deployment with Private Endpoint
 # This example demonstrates deploying a Linux Web App with:
 # - Public network access DISABLED
 # - Private endpoint for internal connectivity

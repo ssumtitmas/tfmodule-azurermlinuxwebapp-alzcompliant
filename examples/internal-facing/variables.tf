@@ -1,4 +1,4 @@
-# Internal Web App Example Variables
+# Internal-Facing Web App Example Variables
 # This example demonstrates an internal-only deployment with private endpoint
 
 # Core Required Variables

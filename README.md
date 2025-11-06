@@ -434,14 +434,12 @@ These variables are **optional** - they have sensible defaults:
 
 **💡 Tip**: Only override optional variables when you need to change the default behavior!
 
-## �📁 Examples
+## 📁 Examples
 
-This repository includes four comprehensive examples:
+This repository includes two deployment examples:
 
-- **[Basic](./examples/basic/)**: Minimal ALZ-compliant deployment
-- **[Diagnostics](./examples/diagnostics/)**: Enhanced monitoring and logging
-- **[Internal](./examples/internal/)**: Private endpoint deployment with public access disabled
-- **[Private ISE](./examples/private-ise/)**: Private access with network restrictions
+- **[External-Facing](./examples/external-facing/)**: Public-facing deployment with public network access enabled
+- **[Internal-Facing](./examples/internal-facing/)**: Private deployment with public access disabled and private endpoint enabled
 
 Each example includes:
 - Complete Terraform configuration

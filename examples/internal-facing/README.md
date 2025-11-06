@@ -1,4 +1,4 @@
-# Internal/Private Web App Deployment Example
+# Internal-Facing Web App Deployment Example
 
 This example demonstrates deploying an Azure Linux Web App with **private endpoint** and **public access disabled** for internal-only applications.
 
@@ -150,9 +150,7 @@ Requires VPN or ExpressRoute connection to the Azure VNet.
 
 ## Related Examples
 
-- [Basic](../basic/) - Simple public deployment
-- [Diagnostics](../diagnostics/) - Enhanced monitoring configuration
-- [Private ISE](../private-ise/) - Network restrictions with public access
+- [External-Facing](../external-facing/) - Public-facing deployment with public network access
 
 ## Resources
 
