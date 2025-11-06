@@ -20,7 +20,6 @@ A production-ready Terraform module that deploys an Azure Linux Web App with sec
 - [Examples](#-examples)
 - [ALZ Compliance](#-alz-compliance)
 - [Requirements](#-requirements)
-- [Contributing](#-contributing)
 
 ## 🚀 Features
 
@@ -63,7 +62,7 @@ A production-ready Terraform module that deploys an Azure Linux Web App with sec
 
 ```hcl
 module "web_app" {
-  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant//modules/linux-webapp?ref=v1.0.0"
+  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant?ref=v1.0.0"
 
   # ========================================
   # REQUIRED VARIABLES
@@ -100,7 +99,7 @@ The simplest deployment for development or testing environments:
 
 ```hcl
 module "basic_web_app" {
-  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant//modules/linux-webapp?ref=v1.0.0"
+  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant?ref=v1.0.0"
 
   # REQUIRED: Core configuration
   workload_name                = "webapp"
@@ -129,7 +128,7 @@ Production deployment with comprehensive monitoring and custom app settings:
 
 ```hcl
 module "production_web_app" {
-  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant//modules/linux-webapp?ref=v1.0.0"
+  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant?ref=v1.0.0"
 
   # REQUIRED: Core configuration
   workload_name                = "webapp"
@@ -204,7 +203,7 @@ Secure deployment with network access controls:
 
 ```hcl
 module "secure_web_app" {
-  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant//modules/linux-webapp?ref=v1.0.0"
+  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant?ref=v1.0.0"
 
   # REQUIRED: Core configuration
   workload_name                = "webapp"
@@ -298,7 +297,7 @@ data "azurerm_subnet" "app" {
 
 # Your service's web application
 module "my_service_web_app" {
-  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant//modules/linux-webapp?ref=v1.0.0"
+  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant?ref=v1.0.0"
 
   # Service-specific configuration
   workload_name       = "myservice"
@@ -482,14 +481,6 @@ This module automatically ensures compliance with Azure Landing Zone policies:
 - Resource Group (existing)
 - Log Analytics Workspace (existing)
 - Virtual Network/Subnet (optional, for network restrictions)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests: `terraform validate` and `terraform plan`
-5. Submit a pull request
 
 ## 📄 License
 

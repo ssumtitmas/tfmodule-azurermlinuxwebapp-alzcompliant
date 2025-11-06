@@ -20,7 +20,7 @@ provider "azurerm" {
 # - Enhanced security for internal-only applications
 
 module "internal_linux_webapp" {
-  source = "../../modules/linux-webapp"
+  source = "../.."
 
   # Core configuration
   workload_name       = var.workload_name

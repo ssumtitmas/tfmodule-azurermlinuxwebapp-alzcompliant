@@ -15,7 +15,7 @@ provider "azurerm" {
 
 # Enhanced diagnostics example with comprehensive logging
 module "linux_web_app" {
-  source = "../../modules/linux-webapp"
+  source = "../.."
 
   workload_name                = var.workload_name
   environment                  = var.environment

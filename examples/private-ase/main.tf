@@ -3,7 +3,7 @@
 # Suitable for secure environments requiring network isolation
 
 module "private_linux_webapp" {
-  source = "../../modules/linux-webapp"
+  source = "../.."
 
   # Core configuration
   workload_name       = var.workload_name

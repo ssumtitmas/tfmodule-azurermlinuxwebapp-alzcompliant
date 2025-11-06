@@ -15,7 +15,7 @@ provider "azurerm" {
 
 # Basic ALZ-compliant Linux Web App deployment
 module "linux_web_app" {
-  source = "../../modules/linux-webapp"
+  source = "../.."
 
   workload_name                = var.workload_name
   environment                  = var.environment
