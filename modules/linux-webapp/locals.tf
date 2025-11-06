@@ -48,6 +48,9 @@ locals {
   app_service_plan_name = "plan-${local.naming_prefix}"
   diagnostic_setting_name = "diag-${local.naming_prefix}"
 
+  # Determine App Service Plan ID (existing or to be created)
+  app_service_plan_id = var.app_service_plan_id != null ? var.app_service_plan_id : azurerm_service_plan.main[0].id
+
   # Effective site configuration for deployment slots to inherit from
   effective_site_config = {
     always_on                         = var.site_config.always_on

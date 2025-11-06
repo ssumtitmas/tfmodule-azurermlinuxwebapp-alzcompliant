@@ -1,16 +1,3 @@
-# Data sources for existing resources
-data "azurerm_client_config" "current" {}
-
-data "azurerm_resource_group" "main" {
-  name = var.resource_group_name
-}
-
-# Local computations
-locals {
-  # Determine App Service Plan ID (existing or to be created)
-  app_service_plan_id = var.app_service_plan_id != null ? var.app_service_plan_id : azurerm_service_plan.main[0].id
-}
-
 # Conditional App Service Plan creation
 resource "azurerm_service_plan" "main" {
   count = var.app_service_plan_id == null ? 1 : 0
