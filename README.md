@@ -10,10 +10,8 @@ A production-ready Terraform module that deploys an Azure Linux Web App with sec
 - [Features](#-features)
 - [Quick Start](#-quick-start)
 - [Usage Examples](#-usage-examples)
-  - [Basic Deployment](#basic-deployment)
-  - [Enhanced Monitoring](#enhanced-monitoring)
-  - [Private Access Restrictions](#private-access-restrictions)
-  - [Remote Module Usage](#remote-module-usage)
+  - [External-Facing Deployment](#external-facing-deployment)
+  - [Internal-Facing Deployment](#internal-facing-deployment)
 - [Module Configuration](#-module-configuration)
 - [Inputs](#-inputs)
 - [Outputs](#-outputs)
@@ -93,41 +91,12 @@ module "web_app" {
 
 ## 📚 Usage Examples
 
-### Basic Deployment
+### External-Facing Deployment
 
-The simplest deployment for development or testing environments:
-
-```hcl
-module "basic_web_app" {
-  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant?ref=v1.0.0"
-
-  # REQUIRED: Core configuration
-  workload_name                = "webapp"
-  environment                  = "dev"  # Must be: dev, test, staging, or prod
-  location                     = "East US 2"
-  resource_group_name          = "rg-webapp-dev-eastus2-001"
-  log_analytics_workspace_id   = var.log_analytics_workspace_id
-
-  # OPTIONAL: Runtime configuration (overriding defaults)
-  linux_fx_version = "PYTHON|3.11"      # Default: NODE|18-lts
-  app_service_plan_sku = "B1"           # Default: B1
-
-  # OPTIONAL: Development tags
-  tags = {
-    Environment = "Development"
-    Owner      = "Dev Team"
-    CostCenter = "DEV-001"
-    Compliance = "ALZ"
-  }
-}
-```
-
-### Enhanced Monitoring
-
-Production deployment with comprehensive monitoring and custom app settings:
+Public-facing deployment with public network access enabled:
 
 ```hcl
-module "production_web_app" {
+module "external_web_app" {
   source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant?ref=v1.0.0"
 
   # REQUIRED: Core configuration
@@ -137,72 +106,53 @@ module "production_web_app" {
   resource_group_name          = "rg-webapp-prod-eastus2-001"
   log_analytics_workspace_id   = var.log_analytics_workspace_id
 
-  # OPTIONAL: Production App Service Plan (overriding default B1)
-  app_service_plan_sku = "P2v3"
-
+  # OPTIONAL: Premium tier for production
+  app_service_plan_sku = "P1v3"
+  
   # OPTIONAL: Runtime configuration
   linux_fx_version = "NODE|18-lts"
 
-  # OPTIONAL: Enhanced site configuration
+  # Network configuration - PUBLIC ACCESS ENABLED
+  public_network_access_enabled = true
+  
+  # No private endpoint for external deployment
+  private_endpoint = {
+    enabled = false
+  }
+
+  # OPTIONAL: Site configuration
   site_config = {
-    always_on               = true
+    always_on              = true
     health_check_path      = "/health"
-    health_check_grace_period = 600
-    http2_enabled          = true
-    minimum_tls_version    = "1.2"
-    worker_count           = 2
+    websockets_enabled     = false
+    client_affinity_enabled = false
   }
 
   # OPTIONAL: Application settings
   app_settings = {
-    "WEBSITE_NODE_DEFAULT_VERSION" = "18.17.0"
-    "NODE_ENV"                     = "production"
-    "WEBSITE_HTTPLOGGING_RETENTION_DAYS" = "30"
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = var.app_insights_key
-  }
-
-  # Full diagnostic logging
-  diagnostic_log_categories = [
-    "AppServiceHTTPLogs",
-    "AppServiceConsoleLogs",
-    "AppServiceAppLogs",
-    "AppServiceAuditLogs",
-    "AppServiceIPSecAuditLogs",
-    "AppServicePlatformLogs"
-  ]
-
-  # Deployment slot for staging
-  deployment_slots = {
-    staging = {
-      site_config = {
-        always_on           = true
-        health_check_path   = "/health"
-        minimum_tls_version = "1.2"
-      }
-      app_settings = {
-        "NODE_ENV"  = "staging"
-        "SLOT_NAME" = "staging"
-      }
-    }
+    "WEBSITE_NODE_DEFAULT_VERSION"     = "18.17.0"
+    "NODE_ENV"                         = "production"
+    "WEBSITE_RUN_FROM_PACKAGE"        = "1"
   }
 
   # Production tags
   tags = {
-    Environment     = "Production"
-    Owner          = "Application Team"
-    CostCenter     = "APP-001"
-    Compliance     = "ALZ"
-    BackupRequired = "true"
+    Environment        = "Production"
+    Owner             = "Platform Team"
+    CostCenter        = "IT-001"
+    Compliance        = "ALZ"
+    DataClassification = "Public"
+    NetworkType       = "External"
   }
 }
 ```
 
-### Private Access Restrictions
+### Internal-Facing Deployment
 
-Secure deployment with network access controls:
+Private deployment with public access disabled and private endpoint:
 
 ```hcl
-module "secure_web_app" {
+module "internal_web_app" {
   source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant?ref=v1.0.0"
 
   # REQUIRED: Core configuration
@@ -212,170 +162,47 @@ module "secure_web_app" {
   resource_group_name          = "rg-webapp-prod-eastus2-001"
   log_analytics_workspace_id   = var.log_analytics_workspace_id
 
-  # OPTIONAL: Premium tier for advanced features
-  app_service_plan_sku = "P2v3"
-  linux_fx_version = "DOTNETCORE|8.0"
+  # OPTIONAL: Premium tier required for private endpoints
+  app_service_plan_sku = "P1v3"
+  
+  # OPTIONAL: Runtime configuration
+  linux_fx_version = "NODE|18-lts"
 
-  # OPTIONAL: Network access restrictions (default: no restrictions)
-  access_restrictions = [
-    {
-      name                      = "AllowCorporateVNet"
-      priority                  = 100
-      action                   = "Allow"
-      virtual_network_subnet_id = var.app_subnet_id
-      description              = "Allow access from application subnet"
-    },
-    {
-      name        = "AllowJumpbox"
-      priority    = 200
-      action      = "Allow"
-      ip_address  = "10.0.1.100/32"
-      description = "Allow access from jumpbox"
-    },
-    {
-      name        = "DenyInternet"
-      priority    = 300
-      action      = "Deny"
-      ip_address  = "0.0.0.0/0"
-      description = "Deny all other access"
-    }
-  ]
+  # Network configuration - PUBLIC ACCESS DISABLED
+  public_network_access_enabled = false
 
-  # OPTIONAL: User-assigned managed identity (default: system-assigned only)
-  user_assigned_identity_ids = [
-    var.user_assigned_identity_id
-  ]
+  # Private endpoint configuration for internal access
+  private_endpoint = {
+    enabled                        = true
+    subnet_id                      = var.private_endpoint_subnet_id
+    private_dns_zone_ids           = [var.private_dns_zone_id]
+    private_service_connection_name = "webapp-private-connection"
+  }
 
-  # OPTIONAL: Security-focused tags
+  # OPTIONAL: Site configuration
+  site_config = {
+    always_on              = true
+    health_check_path      = "/health"
+    websockets_enabled     = false
+    client_affinity_enabled = false
+  }
+
+  # OPTIONAL: Application settings
+  app_settings = {
+    "WEBSITE_NODE_DEFAULT_VERSION"     = "18.17.0"
+    "NODE_ENV"                         = "production"
+    "WEBSITE_RUN_FROM_PACKAGE"        = "1"
+  }
+
+  # Production tags
   tags = {
     Environment        = "Production"
-    Owner             = "Security Team"
-    CostCenter        = "SEC-001"
+    Owner             = "Platform Team"
+    CostCenter        = "IT-001"
     Compliance        = "ALZ"
-    DataClassification = "Confidential"
-    SecurityLevel     = "High"
+    DataClassification = "Internal"
+    NetworkType       = "Private"
   }
-}
-```
-
-### Remote Module Usage
-
-Here's how to use this module in your service's Terraform configuration:
-
-```hcl
-# terraform/main.tf
-terraform {
-  required_version = ">= 1.7.0"
-  
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.0"
-    }
-  }
-
-  backend "azurerm" {
-    # Configure your backend here
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-# Data sources for existing resources
-data "azurerm_log_analytics_workspace" "main" {
-  name                = "law-shared-prod-eastus2-001"
-  resource_group_name = "rg-shared-prod-eastus2-001"
-}
-
-data "azurerm_subnet" "app" {
-  name                 = "snet-app-prod-eastus2-001"
-  virtual_network_name = "vnet-shared-prod-eastus2-001"
-  resource_group_name  = "rg-network-prod-eastus2-001"
-}
-
-# Your service's web application
-module "my_service_web_app" {
-  source = "github.com/ssumtitmas/tfmodule-azurermlinuxwebapp-alzcompliant?ref=v1.0.0"
-
-  # Service-specific configuration
-  workload_name       = "myservice"
-  environment         = var.environment
-  location            = var.location
-  resource_group_name = var.resource_group_name
-
-  # ALZ compliance
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.main.id
-
-  # Application configuration
-  linux_fx_version     = "NODE|18-lts"
-  app_service_plan_sku = var.environment == "prod" ? "P2v3" : "B2"
-
-  # Runtime configuration
-  site_config = {
-    always_on               = var.environment == "prod" ? true : false
-    health_check_path      = "/api/health"
-    minimum_tls_version    = "1.2"
-    http2_enabled          = true
-    ftps_state            = "Disabled"
-  }
-
-  # Environment-specific app settings
-  app_settings = merge(
-    {
-      "NODE_ENV"                        = var.environment
-      "WEBSITE_NODE_DEFAULT_VERSION"    = "18.17.0"
-      "PORT"                           = "8080"
-    },
-    var.additional_app_settings
-  )
-
-  # Network security (production only)
-  access_restrictions = var.environment == "prod" ? [
-    {
-      name                      = "AllowAppSubnet"
-      priority                  = 100
-      action                   = "Allow"
-      virtual_network_subnet_id = data.azurerm_subnet.app.id
-      description              = "Allow access from app subnet"
-    }
-  ] : []
-
-  # Production deployment slots
-  deployment_slots = var.environment == "prod" ? {
-    staging = {
-      site_config = {
-        always_on           = true
-        health_check_path   = "/api/health"
-        minimum_tls_version = "1.2"
-      }
-      app_settings = {
-        "NODE_ENV"  = "staging"
-        "SLOT_NAME" = "staging"
-      }
-    }
-  } : {}
-
-  # Service tags
-  tags = {
-    Environment = var.environment
-    Service    = "my-service"
-    Owner      = "My Team"
-    CostCenter = "MYTEAM-001"
-    Compliance = "ALZ"
-  }
-}
-
-# Output important values for other resources
-output "web_app_url" {
-  description = "The default URL of the web app"
-  value       = module.my_service_web_app.default_hostname
-}
-
-output "web_app_identity" {
-  description = "The system-assigned managed identity"
-  value       = module.my_service_web_app.system_assigned_identity
 }
 ```
 
